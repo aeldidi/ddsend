@@ -1,1 +1,4 @@
 /target
+ddsend.conf
+ddsend_admin.sock
+ddsend.sock

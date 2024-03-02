@@ -2,8 +2,13 @@
 Configuration
 -------------
 
-Configuring `ddsend` is done by sending commands over a UNIX socket. This
-socket's path is determined using the `DDSEND_ADMIN` environment variable.
+When running ddsend, you must specify a config file location. There is no
+default configuration. Luckily, the only required setting is `socket path`,
+since the `admin socket path` option can be set using `DDSEND_ADMIN`.
+
+After the first load, you can send a `POST` request to `/load` on the admin
+socket to force the daemon to reload the config file from a specified path (or
+the previously configured location if no path is given).
 
 Error Handling
 --------------
