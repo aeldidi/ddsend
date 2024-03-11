@@ -19,6 +19,14 @@ use smol::{net::unix::UnixListener, Async};
 use smol_hyper::rt::FuturesIo;
 use tracing::{error, event, info, warn, Level};
 
+// TODO: 1. Create an interface for database and object store
+//       2. Implement those interfaces using SQlite allowing an in-memory db to
+//          be used.
+//       3. Use that abstraction to implement upload and download
+//       4. Add an actual s3 storage backend
+//       5. Add postgres as a database option
+//       6. Deploy using postgres and s3.
+
 /// Hook into panic to log an error! when one occurs.
 mod tracing_log_panic {
     use std::panic::PanicInfo;
@@ -228,8 +236,8 @@ fn main() -> Result<()> {
     let (work, admin) = bind_sockets(config.clone())?;
     event!(
         Level::INFO,
-        work = unixlistener_name(&work),
-        admin = unixlistener_name(&admin),
+        socket.work = unixlistener_name(&work),
+        socket.admin = unixlistener_name(&admin),
         "bound sockets and listening for connections...",
     );
 
@@ -243,8 +251,7 @@ async fn listen(work: &UnixListener, admin: &UnixListener) -> Result<()> {
     loop {
         select! {
             conn = work.accept().fuse() => {
-                let conn = conn?.0;
-                let conn = FuturesIo::new(conn);
+                let conn = FuturesIo::new(conn?.0);
                 smol::spawn(async move {
                     if let Err(e) = http1::Builder::new()
                     .serve_connection(conn, service_fn(serve))
