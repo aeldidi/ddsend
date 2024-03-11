@@ -40,7 +40,9 @@ nonce which must be used to generate a key to sign and decrypt the data.
 
 Specifically, the uploading process is as follows:
 - The user generates a nonce and using HKDF SHA-256 generates 3 keys:
-        1. A metadata encryption key 
+        1. A metadata encryption key  (128 bit AES-GCM)
+        2. An encryption key for the data you want to send (128 bit AES-GCM)
+        3. A signing key for authenticating requests (HMAC-SHA 256)
 
 How Does This Work
 ------------------
